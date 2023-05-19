@@ -28,13 +28,13 @@ plot(t,omega,'r'); title('Velocidad angular w,t');
 %Metodo de Chena:
 %Defino el escalon
 opt = stepDataOptions;
-opt.StepAmplitude =1; %unitario
+opt.StepAmplitude =12; %unitario
 
 %Muestreo 3 puntos que describan la dinámica del sistema, es
 % Importante tomar valores que si estén en la tabla. Por lo
 % que tal vez no sea el doble o el triple de t1 pero si los
 % mas cercanos
-int=2000;
+int=250;
 t_inic=t(int); %tomando como tiempo inicial
 [val lugar] =min(abs(t_inic-t));
 y1=omega(lugar);
