@@ -1,5 +1,5 @@
 clear; clc; close; 
-
+%%Para encontrar los parametros del motor y encontrar el modelo
 %Importo los datos de la tabla
 data=xlsread('Curvas_Medidas_Motor_2023.xlsx','Hoja1');
 %1_t Tiempo
@@ -75,3 +75,88 @@ T1_ang=sum(T1/length(T1));
  sys_G_ang
  step(sys_G_ang,stepDataOptions,'y'); title('w del metodo,t'); %Grafico la ft modelada
  hold off
+ 
+ %%Para verificar el modelo obtenido con las curvas dadas
+ 
+clear all;
+X=[0; 0; 0; 0]; %Condiciones iniciales
+
+t_etapa=1e-4; %Tiempo de integracion
+tF=1; % Tiempo de Simulacion
+ii=0;
+
+u=0;
+
+  TL=0;
+for t=0:t_etapa:tF
+ ii=ii+1;
+if(t>=0.0249 & t<=0.15)
+     u=12;
+ end
+
+ if(t>0.15)
+     u=-12;
+ end
+  if (t>=0.1504)
+  
+      TL=-3.5e-2;
+      % TL=-7.5e-2;
+      
+  end
+      
+ X=modmotor2(t_etapa, X, u,TL); %(Tiempo de integracion, Condiciones iniciales, accion de control, carga)
+
+ x1(ii)=X(1); %Omega
+ x2(ii)=X(2); %wp
+ x3(ii)=X(3); %ia
+ x4(ii)=X(4); %theta
+
+   
+ acc(ii)=u;
+ Carga(ii)=TL;
+end
+%Grafico
+t=0:t_etapa:tF;
+
+hold on;
+subplot(4,1,1);hold on;
+plot(t,x1,'r');title('Salida omega, w');grid
+
+subplot(4,1,2);hold on;
+plot(t,x3,'b');title('Salida corriente de armadura, ia');
+xlabel('Tiempo [Seg.]');
+
+subplot(4,1,3);hold on;
+plot(t,acc,'g');title('Entrada, Va');
+xlabel('Tiempo [Seg.]');
+
+subplot(4,1,4);hold on;
+plot(t,Carga,'m');title('Carga, TL');
+xlabel('Tiempo [Seg.]');
+
+
+hold off
+
+% clear; clc; close; 
+
+%Importo los datos de la tabla
+data=xlsread('Curvas_Medidas_Motor_2023.xlsx','Hoja1');
+%1_t Tiempo
+%2_omega VelAngular
+%3_ia Corriente armadura
+%4_v Tension
+%5_TL Torque
+
+%Sin tener encuenta el retardo, solo la respuesta a los +12
+t=data(:,1);
+omega=data(:,2);
+ia=data(:,3);
+v=data(:,4);
+TL=data(:,5);
+
+clearvars data raw;
+hold on
+subplot(4,1,1); plot(t,omega,''); title('Velocidad angular w,t');
+subplot(4,1,2); plot(t,ia,''); title('Corriente de armadura ia,t');
+subplot(4,1,3); plot(t,v,''); title('Tension v,t');
+subplot(4,1,4); plot(t,TL,''); title('Carga TL,t');
